@@ -57,6 +57,16 @@
   </head>
   <body>
     <ul id="messages"></ul>
+    <button id="rockBtn">Rock</button>
+    <!-- 0000 0001, 1 -->
+    <button id="paperBtn">Paper</button>
+    <!-- 0000 0010, 2 -->
+    <button id="scissorsBtn">Scissors</button>
+    <!-- 0000 0100, 4 -->
+    <button id="lizardBtn">Lizard</button>
+    <!-- 0000 1000, 8 -->
+    <button id="spockBtn">Spock</button>
+    <!-- Byte Value 0 -->
     <form id="form" action="">
       <input id="input" autocomplete="off" /><button>Send</button>
     </form>
@@ -67,6 +77,20 @@
       const form = document.getElementById('form')
       const input = document.getElementById('input')
 
+      document
+        .getElementById('#rockBtn')
+        .addEventListener('click', function (e) {
+          e.preventDefault()
+          if (e.value) {
+            const buf = new ArrayBuffer(1)
+            const view = new Dataview(buf)
+            view.setUint8(0, 0)
+
+            socket.emit('RPSLS', buf)
+            input.value = ''
+          }
+        })
+
       form.addEventListener('submit', function (e) {
         e.preventDefault()
         if (input.value) {
@@ -75,11 +99,16 @@
         }
       })
 
-      socket.on('chat message', function (msg) {
-        var item = document.createElement('li')
-        item.textContent = msg
-        messages.appendChild(item)
-        window.scrollTo(0, document.body.scrollHeight)
+      socket.on('RPSLS', function (msg) {
+        if (msg.startsWith('command:')) {
+          const color = msg.split(':').pop()
+          body = document.querySelector('button').style.color = color
+        } else {
+          var item = document.createElement('li')
+          item.textContent = msg
+          messages.appendChild(item)
+          window.scrollTo(0, document.body.scrollHeight)
+        }
       })
     </script>
   </body>
