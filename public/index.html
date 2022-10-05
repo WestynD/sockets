@@ -86,7 +86,7 @@
             const view = new Dataview(buf)
             view.setUint8(0, 0)
 
-            socket.emit('RPSLS', buf)
+            socket.emit('rpsls', buf)
             input.value = ''
           }
         })
@@ -99,7 +99,7 @@
         }
       })
 
-      socket.on('RPSLS', function (msg) {
+      socket.on('rpsls', function (buf) {
         if (msg.startsWith('command:')) {
           const color = msg.split(':').pop()
           body = document.querySelector('button').style.color = color

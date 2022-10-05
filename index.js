@@ -18,6 +18,10 @@ io.on('connection', (socket) => {
   })
 })
 
+io.on('rpsls', (buffer) => {
+  io.emit('rpsls', buffer)
+})
+
 server.listen(3000, () => {
   console.log('listening on *:3000')
 })
