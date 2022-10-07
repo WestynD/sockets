@@ -57,15 +57,15 @@
   </head>
   <body>
     <ul id="messages"></ul>
-    <button id="rockBtn">Rock</button>
+    <button id="rockBtn" onclick="choice(1)">Rock</button>
     <!-- 0000 0001, 1 -->
-    <button id="paperBtn">Paper</button>
+    <button id="paperBtn" onclick="choice(2)">Paper</button>
     <!-- 0000 0010, 2 -->
-    <button id="scissorsBtn">Scissors</button>
+    <button id="scissorsBtn" onclick="choice(4)">Scissors</button>
     <!-- 0000 0100, 4 -->
-    <button id="lizardBtn">Lizard</button>
+    <button id="lizardBtn" onclick="choice(8)">Lizard</button>
     <!-- 0000 1000, 8 -->
-    <button id="spockBtn">Spock</button>
+    <button id="spockBtn" onclick="choice(0)">Spock</button>
     <!-- Byte Value 0 -->
     <form id="form" action="">
       <input id="input" autocomplete="off" /><button>Send</button>
@@ -77,19 +77,19 @@
       const form = document.getElementById('form')
       const input = document.getElementById('input')
 
-      document
-        .getElementById('#rockBtn')
-        .addEventListener('click', function (e) {
-          e.preventDefault()
-          if (e.value) {
-            const buf = new ArrayBuffer(1)
-            const view = new Dataview(buf)
-            view.setUint8(0, 0)
+      // document
+      //   .getElementById('#rockBtn')
+      //   .addEventListener('click', function (e) {
+      //     e.preventDefault()
+      //     if (e.value) {
+      //       const buf = new ArrayBuffer(1)
+      //       const view = new Dataview(buf)
+      //       view.setUint8(0, 0)
 
-            socket.emit('rpsls', buf)
-            input.value = ''
-          }
-        })
+      //       socket.emit('rpsls', buf)
+      //       input.value = ''
+      //     }
+      //   })
 
       form.addEventListener('submit', function (e) {
         e.preventDefault()
@@ -100,16 +100,23 @@
       })
 
       socket.on('rpsls', function (buf) {
-        if (msg.startsWith('command:')) {
-          const color = msg.split(':').pop()
-          body = document.querySelector('button').style.color = color
-        } else {
-          var item = document.createElement('li')
-          item.textContent = msg
-          messages.appendChild(item)
-          window.scrollTo(0, document.body.scrollHeight)
-        }
+        buf = buf.slice(2)
+        let uint8View = new Uint8Array(buf)
+        let dataView = new DataView(buf)
+
+        if (uint8View[0] === 0) {
+          console.log('Player chose Spock')
+        } else if (dataView.getUint8(0) === 1) console.log('Player chose rock')
       })
+
+      function choice(selection) {
+        const buf = new ArrayBuffer(1)
+        const view = new DataView(buf)
+
+        view.setUint8(0, selection)
+
+        socket.emit('rpsls', buf)
+      }
     </script>
   </body>
 </html>

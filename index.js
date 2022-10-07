@@ -16,6 +16,9 @@ io.on('connection', (socket) => {
     console.log('message: ' + msg)
     io.emit('chat message', msg)
   })
+  socket.on('rpsls', (buf) => {
+    socket.emit('rpsls', buf) // I would want a broadcast instead
+  })
 })
 
 io.on('rpsls', (buffer) => {
